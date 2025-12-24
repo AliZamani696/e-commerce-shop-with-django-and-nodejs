@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from .models import CustomUser,Profile
 from django.utils.translation import gettext_lazy as _
 
 @admin.register(CustomUser)
@@ -36,3 +36,6 @@ class CustomUserAdmin(UserAdmin):
     @admin.display(boolean=True, description='Premium')
     def is_premium(self, obj):
         return obj.is_premium
+
+
+admin.site.register(Profile)
