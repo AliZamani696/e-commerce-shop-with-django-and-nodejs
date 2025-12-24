@@ -3,7 +3,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
-
+from django.core.cache import cache
 
 
 
@@ -48,6 +48,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
+    def get_cached_role(self):
+        cache_key = self.id
+        role = cache.get(cache_key)
+        if not role:
+            role = self.role
+            cache.set(cache_key,role,timeout=3600)
+        return role
+
     @property
     def is_premium(self):
         if self.role == self.Role.ADMIN:
@@ -60,3 +68,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+
+
