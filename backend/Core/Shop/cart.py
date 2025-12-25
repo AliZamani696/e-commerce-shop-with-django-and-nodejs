@@ -20,6 +20,13 @@ class RedisCart:
         else:
             cart[p_id] = {"quantity":quantity,"price":str(price)}
         self.conn.set(self.key,json.dumps(cart),ex=86400)
+        notification = {
+            "event": "item_added",
+            "user_id": self.key.split(':')[-1],
+            "product_id": str(product_id),
+            "quantity": quantity
+            }
+        self.conn.publish("cart_notification",json.dumps(notification))
 
 
     def get_items(self):
@@ -33,6 +40,11 @@ class RedisCart:
             if str(product_id) in cart:
                 del cart[str(product_id)]
                 self.conn.set(self.key,json.dumps(cart),ex=86400)
-
+        notification = {
+            "event": "item_removed",
+            "user_id": self.key.split(':')[-1],
+            "product_id": str(product_id)
+            }
+        self.conn.publish('cart_notifications', json.dumps(notification))
     def clear(self):
         self.conn.delete(self.key)

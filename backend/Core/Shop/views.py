@@ -23,6 +23,7 @@ class CartAPIView(APIView):
         product_id = req.data.get("product_id")
         quantity = int(req.data.get("quantity",1))
 
+
         try:
             product = Product.objects.get(id=product_id,is_active=True)
             cart = RedisCart(req.user.id)
